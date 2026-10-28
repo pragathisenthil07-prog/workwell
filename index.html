@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Workwell</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+      :root {
+        --bg: #f5efe4;
+        --panel: #1d2a2a;
+        --panel-2: #243239;
+        --panel-3: #2d3a38;
+        --card: #fffaf2;
+        --ink: #20312f;
+        --muted: #5d6d6b;
+        --line: rgba(33, 43, 41, 0.12);
+        --mint: #dfeee1;
+        --mint-deep: #99c6a8;
+        --amber: #f5d7a0;
+        --amber-strong: #dca35d;
+        --peach: #f3ddd4;
+        --white: #ffffff;
+        --shadow: 0 14px 32px rgba(18, 24, 25, 0.12);
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body, #root {
+        margin: 0;
+        min-height: 100%;
+        height: 100%;
+        font-family: Inter, "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+      }
+
+      body {
+        background:
+          radial-gradient(circle at top, rgba(255,255,255,0.8), transparent 38%),
+          var(--bg);
+      }
+
+      button {
+        font: inherit;
+      }
+
+      .app-shell {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 18px 18px 48px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 20px 14px;
+        background: rgba(255, 250, 242, 0.6);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        backdrop-filter: blur(14px);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .brand-mark {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--mint-deep), var(--amber));
+        display: grid;
+        place-items: center;
+        color: var(--ink);
+        font-weight: 800;
+        letter-spacing: 0.04em;
+      }
+
+      .brand h1 {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(1.6rem, 2vw, 2.2rem);
+        margin: 0;
+        letter-spacing: -0.04em;
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+
+      .nav-btn {
+        border: 1px solid transparent;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--ink);
+        padding: 10px 16px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s ease;
+      }
+
+      .nav-btn:hover {
+        background: rgba(34, 49, 47, 0.05);
+      }
+
+      .nav-btn.active {
+        background: var(--panel);
+        color: #edf4ef;
+        box-shadow: var(--shadow);
+      }
+
+      .content-wrap {
+        margin-top: 18px;
+      }
+
+      .screen {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 22px;
+      }
+
+      .main-panel, .side-panel {
+        background: rgba(255, 250, 242, 0.9);
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        box-shadow: var(--shadow);
+      }
+
+      .main-panel {
+        padding: 26px;
+      }
+
+      .side-panel {
+        padding: 22px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--mint-deep);
+        display: inline-block;
+      }
+
+      h2 {
+        font-family: Georgia, "Times New Roman", serif;
+        margin: 10px 0 8px;
+        letter-spacing: -0.04em;
+        font-size: clamp(2rem, 2.5vw, 3rem);
+        line-height: 1.06;
+      }
+
+      .subhead {
+        color: var(--muted);
+        line-height: 1.6;
+        margin: 0 0 20px;
+        font-size: 0.98rem;
+      }
+
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 22px;
+      }
+
+      .metric-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 18px 16px 14px;
+      }
+
+      .metric-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .metric-name {
+        font-size: 0.9rem;
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .pill {
+        background: var(--mint);
+        color: var(--ink);
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+
+      .pill.amber {
+        background: rgba(245, 215, 160, 0.55);
+      }
+
+      .pill.peach {
+        background: rgba(243, 221, 212, 0.6);
+      }
+
+      .metric-value {
+        font-size: clamp(2rem, 2vw, 2.8rem);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        margin-bottom: 12px;
+      }
+
+      .range {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+
+      .bar {
+        width: 100%;
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(32, 49, 47, 0.08);
+        position: relative;
+        overflow: hidden;
+        margin-top: 10px;
+      }
+
+      .bar > span {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: var(--fill, 50%);
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--mint-deep), var(--amber-strong));
+      }
+
+      .context-box {
+        margin-top: 22px;
+        padding: 18px 18px 14px;
+        border: 1px solid var(--line);
+        background: rgba(223, 238, 225, 0.6);
+        border-radius: 22px;
+      }
+
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 12px;
+      }
+
+      .toggle-label {
+        font-weight: 700;
+      }
+
+      .toggle {
+        position: relative;
+        width: 56px;
+        height: 32px;
+        background: rgba(32, 49, 47, 0.15);
+        border-radius: 999px;
+        border: none;
+        cursor: pointer;
+      }
+
+      .toggle::after {
+        content: "";
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        left: 4px;
+        top: 4px;
+        border-radius: 50%;
+        background: white;
+        transition: transform 0.2s ease;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+      }
+
+      .toggle.on {
+        background: var(--mint-deep);
+      }
+
+      .toggle.on::after {
+        transform: translateX(24px);
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 90px;
+        resize: vertical;
+        border: 1px solid rgba(32,49,47,0.12);
+        border-radius: 16px;
+        padding: 12px 14px;
+        background: rgba(255,255,255,0.5);
+        font: inherit;
+        color: var(--ink);
+      }
+
+      .side-panel .box {
+        background: var(--panel);
+        color: #edf5ef;
+        border-radius: 22px;
+        padding: 18px 18px 16px;
+        margin-bottom: 16px;
+      }
+
+      .side-panel .box h3 {
+        margin: 0 0 6px;
+        font-size: 1rem;
+      }
+
+      .side-panel .box p {
+        margin: 0;
+        font-size: 0.93rem;
+        line-height: 1.55;
+        color: rgba(237, 245, 239, 0.75);
+      }
+
+      .stat-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+      }
+
+      .stat-row:last-child {
+        border-bottom: none;
+      }
+
+      .stat-row span:first-child {
+        color: rgba(237, 245, 239, 0.75);
+      }
+
+      .stat-row strong {
+        font-size: 1.05rem;
+      }
+
+      .muted-callout {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.28);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 14px 16px;
+        margin-top: 24px;
+        font-size: 0.92rem;
+      }
+
+      .muted-callout .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--amber-strong);
+      }
+
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 20px;
+      }
+
+      .theme-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 16px;
+      }
+
+      .theme-card h3 {
+        margin: 0 0 10px;
+        font-size: 1rem;
+      }
+
+      .bullet-list {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+        padding-left: 16px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .summary-strip {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0,1fr));
+        gap: 12px;
+        margin-top: 20px;
+      }
+
+      .mini-stat {
+        background: rgba(223, 238, 225, 0.45);
+        border: 1px solid var(--line);
+        padding: 16px 14px;
+        border-radius: 18px;
+      }
+
+      .mini-stat label {
+        display: block;
+        color: var(--muted);
+        font-size: 0.76rem;
+        margin-bottom: 6px;
+      }
+
+      .mini-stat strong {
+        font-size: 1.7rem;
+        letter-spacing: -0.04em;
+      }
+
+      .trial-box {
+        margin-top: 22px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 18px;
+      }
+
+      .trial-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .trial-header h3 {
+        margin: 0;
+        font-size: 1.06rem;
+      }
+
+      .segmented {
+        display: inline-flex;
+        background: rgba(32,49,47,0.06);
+        border-radius: 999px;
+        padding: 4px;
+        border: 1px solid var(--line);
+      }
+
+      .segmented button {
+        border: none;
+        background: transparent;
+        color: var(--muted);
+        padding: 8px 12px;
+        border-radius: 999px;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      .segmented button.active {
+        background: var(--panel);
+        color: white;
+      }
+
+      .trial-feedback {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 18px;
+      }
+
+      .feedback-card {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 16px;
+        background: rgba(255,255,255,0.35);
+      }
+
+      .feedback-card h4 {
+        margin: 0 0 8px;
+        font-size: 0.92rem;
+      }
+
+      .score {
+        font-size: clamp(2rem, 2vw, 2.6rem);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        margin: 0 0 10px;
+      }
+
+      .simple-quote {
+        color: var(--muted);
+        margin: 0;
+        line-height: 1.6;
+      }
+
+      .plain-language {
+        margin-top: 18px;
+        background: rgba(245, 215, 160, 0.18);
+        border: 1px solid rgba(186, 141, 79, 0.22);
+        border-radius: 18px;
+        padding: 16px;
+        color: var(--ink);
+        line-height: 1.7;
+      }
+
+      .cta-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 18px;
+      }
+
+      .primary-btn, .secondary-btn {
+        border: none;
+        border-radius: 14px;
+        padding: 12px 18px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .primary-btn {
+        background: var(--panel);
+        color: white;
+        box-shadow: 0 10px 20px rgba(29, 42, 42, 0.12);
+      }
+
+      .secondary-btn {
+        background: rgba(32,49,47,0.06);
+        color: var(--ink);
+      }
+
+      .shared-note-list {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0 0;
+        display: grid;
+        gap: 10px;
+      }
+
+      .shared-note-list li {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px;
+        padding: 10px 12px;
+        color: rgba(237, 245, 239, 0.86);
+        line-height: 1.5;
+      }
+
+      .trial-form {
+        margin-top: 18px;
+        display: grid;
+        gap: 16px;
+      }
+
+      .field-group {
+        display: grid;
+        gap: 8px;
+      }
+
+      .field-group label {
+        font-weight: 700;
+        color: var(--ink);
+      }
+
+      .field-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .range-input {
+        width: 100%;
+        accent-color: var(--panel);
+      }
+
+      .inline-value {
+        min-width: 58px;
+        text-align: right;
+        font-weight: 800;
+        color: var(--ink);
+      }
+
+      .response-note {
+        width: 100%;
+        min-height: 80px;
+        resize: vertical;
+        border: 1px solid rgba(32,49,47,0.12);
+        border-radius: 14px;
+        padding: 12px 14px;
+        background: rgba(255,255,255,0.52);
+        font: inherit;
+        color: var(--ink);
+      }
+
+      .survey-status {
+        font-size: 0.8rem;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+
+      .readme {
+        margin-top: 28px;
+        background: rgba(255,255,255,0.4);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 18px 20px;
+      }
+
+      .readme h3 {
+        margin-top: 0;
+      }
+
+      .readme ol {
+        margin: 0;
+        padding-left: 18px;
+        line-height: 1.8;
+      }
+
+      @media (max-width: 900px) {
+        .screen {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .app-shell {
+          padding: 12px 12px 28px;
+        }
+
+        .topbar {
+          flex-direction: column;
+          align-items: flex-start;
+          padding: 14px 16px;
+        }
+
+        .nav {
+          justify-content: flex-start;
+        }
+
+        .metrics-grid,
+        .dashboard-grid,
+        .summary-strip,
+        .trial-feedback {
+          grid-template-columns: 1fr;
+        }
+
+        .main-panel,
+        .side-panel {
+          padding: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const employeePatterns = [
+        { name: 'Sleep estimate', value: 6.8, baselineMin: 6.9, baselineMax: 8.3, unit: 'hrs', source: 'Wearable estimate', field: 'sleep', note: 'Illustrative sample value: this came from a wearable estimate and should be treated as an estimate, not a medical measurement.' },
+        { name: 'Stress', value: 7.1, baselineMin: 4.2, baselineMax: 6.7, unit: 'out of 10', source: 'Employee self-report', field: 'stress', note: 'Illustrative sample value: stress was entered by the employee. It is not calculated by the system.' },
+        { name: 'Energy', value: 5.8, baselineMin: 6.4, baselineMax: 8.6, unit: 'out of 10', source: 'Employee self-report', field: 'energy', note: 'Illustrative sample value: energy was entered by the employee. The app does not infer it from device data.' },
+        { name: 'Focus', value: 6.9, baselineMin: 6.2, baselineMax: 8.1, unit: 'out of 10', source: 'Employee self-report', field: 'focus', note: 'Illustrative sample value: focus was entered by the employee. The app does not estimate it automatically.' }
+      ];
+
+      const teamThemes = [
+        { title: 'Workload pacing', detail: 'Employees described a need for steadier handoffs and fewer late-afternoon spikes.', example: '“The day feels compressed before deadlines.”' },
+        { title: 'Recovery time', detail: 'Breaks and transitions were seen as helpful, especially after back-to-back meetings.', example: '“Short pauses made the next tasks easier to start.”' },
+        { title: 'Communication clarity', detail: 'A few teams reported less confusion when priorities were rechecked at the start of the day.', example: '“Clearer expectations helped reduce switching costs.”' },
+        { title: 'Meeting load', detail: 'Feedback suggests that meetings with no decision-making are draining focus more than expected.', example: '“We need fewer updates and more decision time.”' }
+      ];
+
+      const defaultTrialSummary = {
+        before: {
+          energy: 5.8,
+          focus: 6.1,
+          calm: 5.4,
+          quote: '“A quick pause after meetings helped me reset, but the pace still felt packed.”'
+        },
+        after: {
+          energy: 6.9,
+          focus: 7.6,
+          calm: 6.7,
+          quote: '“The short reset made it easier to start the next task without feeling overloaded.”'
+        }
+      };
+
+      const shareOptions = [
+        'Work schedule and pressure points',
+        'Team meetings and project load',
+        'Recovery time and breaks',
+        'Work environment or setup'
+      ];
+
+      function parseScore(value, fallback) {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : fallback;
+      }
+
+      function App() {
+        const [activeTab, setActiveTab] = React.useState('employee');
+        const [shareContext, setShareContext] = React.useState(true);
+        const [contextNote, setContextNote] = React.useState('I usually feel most drained on back-to-back meetings and tight project deadlines.');
+        const [selfReport, setSelfReport] = React.useState({ stress: 7.1, energy: 5.8, focus: 6.9 });
+        const [anonymousNotes, setAnonymousNotes] = React.useState([
+          'Back-to-back meetings leave little transition time between tasks.',
+          'A short pause after meetings made the next task feel easier to begin.'
+        ]);
+        const [trialStage, setTrialStage] = React.useState('before');
+        const [trialResponses, setTrialResponses] = React.useState({
+          before: {
+            energy: defaultTrialSummary.before.energy,
+            focus: defaultTrialSummary.before.focus,
+            calm: defaultTrialSummary.before.calm,
+            note: 'A quick pause after meetings helped me reset, but the pace still felt packed.'
+          },
+          after: {
+            energy: defaultTrialSummary.after.energy,
+            focus: defaultTrialSummary.after.focus,
+            calm: defaultTrialSummary.after.calm,
+            note: 'The short reset made it easier to start the next task without feeling overloaded.'
+          }
+        });
+
+        const updateSelfReport = (field, value) => {
+          setSelfReport((current) => ({
+            ...current,
+            [field]: Number.isFinite(value) ? value : current[field]
+          }));
+        };
+
+        const handleShareNote = () => {
+          const trimmed = contextNote.trim();
+          if (!shareContext || !trimmed) {
+            return;
+          }
+
+          setAnonymousNotes((current) => [trimmed, ...current].slice(0, 6));
+          setContextNote('');
+        };
+
+        return (
+          <div className="app-shell">
+            <header className="topbar">
+              <div className="brand">
+                <div className="brand-mark">W</div>
+                <h1>Workwell</h1>
+              </div>
+
+              <nav className="nav" aria-label="Main navigation">
+                <button className={`nav-btn ${activeTab === 'employee' ? 'active' : ''}`} onClick={() => setActiveTab('employee')}>
+                  Employee view
+                </button>
+                <button className={`nav-btn ${activeTab === 'employer' ? 'active' : ''}`} onClick={() => setActiveTab('employer')}>
+                  Employer dashboard
+                </button>
+                <button className={`nav-btn ${activeTab === 'trial' ? 'active' : ''}`} onClick={() => setActiveTab('trial')}>
+                  Team change trial
+                </button>
+              </nav>
+            </header>
+
+            <main className="content-wrap">
+              {activeTab === 'employee' && (
+                <EmployeeView
+                  shareContext={shareContext}
+                  setShareContext={setShareContext}
+                  contextNote={contextNote}
+                  setContextNote={setContextNote}
+                  onShareNote={handleShareNote}
+                  selfReport={selfReport}
+                  updateSelfReport={updateSelfReport}
+                />
+              )}
+
+              {activeTab === 'employer' && <EmployerView anonymousNotes={anonymousNotes} />}
+
+              {activeTab === 'trial' && (
+                <TeamChangeTrial
+                  trialStage={trialStage}
+                  setTrialStage={setTrialStage}
+                  trialResponses={trialResponses}
+                  setTrialResponses={setTrialResponses}
+                />
+              )}
+            </main>
+
+            <section className="readme" aria-label="README instructions">
+              <h3>README</h3>
+              <ol>
+                <li>Open this file in a browser as a static HTML page, or serve it locally with a simple static server.</li>
+                <li>For a quick local run: cd to the project folder and run <strong>python3 -m http.server 8000</strong>.</li>
+                <li>Then open <strong>http://localhost:8000/</strong> in the browser.</li>
+                <li>This prototype is a mock-up using clearly labeled sample data only. It does not connect to real employee or wearable data.</li>
+              </ol>
+            </section>
+          </div>
+        );
+      }
+
+      function EmployeeView({ shareContext, setShareContext, contextNote, setContextNote, onShareNote, selfReport, updateSelfReport }) {
+        return (
+          <div className="screen">
+            <section className="main-panel">
+              <div className="eyebrow">Employee wellbeing</div>
+              <h2>Your recent patterns</h2>
+              <p className="subhead">
+                Illustrative sample data only. Sleep estimate is a wearable estimate. Stress, energy, and focus are employee-entered self-reports, not generated values.
+              </p>
+
+              <div className="metrics-grid">
+                {employeePatterns.map((item) => {
+                  const below = item.value < item.baselineMin;
+                  const above = item.value > item.baselineMax;
+                  const percent = Math.min(100, Math.max(28, ((item.value - 1) / 10) * 100));
+                  const isEditable = item.source === 'Employee self-report';
+
+                  return (
+                    <div className="metric-card" key={item.name}>
+                      <div className="metric-header">
+                        <div className="metric-name">{item.name}</div>
+                        <span className={`pill ${isEditable ? 'neutral' : below ? 'amber' : above ? 'peach' : ''}`}>
+                          {isEditable ? 'Employee entered' : below ? 'Below usual' : above ? 'Above usual' : 'Within range'}
+                        </span>
+                      </div>
+
+                      {isEditable ? (
+                        <div>
+                          <div className="metric-value">{selfReport[item.field].toFixed(1)}</div>
+                          <div className="field-row" style={{ gridTemplateColumns: '1fr auto', gap: '12px' }}>
+                            <input
+                              className="range-input"
+                              type="range"
+                              min="0"
+                              max="10"
+                              step="0.1"
+                              value={selfReport[item.field]}
+                              onChange={(event) => updateSelfReport(item.field, Number(event.target.value))}
+                            />
+                            <span className="inline-value">{selfReport[item.field].toFixed(1)}</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="metric-value">{item.value}</div>
+                          <div className="range">
+                            <span>Usual</span>
+                            <span>{item.baselineMin}–{item.baselineMax} {item.unit}</span>
+                          </div>
+                          <div className="bar" style={{ '--fill': `${percent}%` }}>
+                            <span />
+                          </div>
+                        </>
+                      )}
+
+                      <p className="subhead" style={{ marginTop: '12px', marginBottom: 0 }}>{item.note}</p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="context-box">
+                <div className="toggle-row">
+                  <div>
+                    <div className="toggle-label">Share work context anonymously</div>
+                    <div className="subhead" style={{ margin: '4px 0 0' }}>
+                      Optional. This helps groups spot patterns without revealing identity.
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className={`toggle ${shareContext ? 'on' : ''}`}
+                    aria-label="Toggle anonymous work context"
+                    onClick={() => setShareContext(!shareContext)}
+                  />
+                </div>
+
+                <textarea
+                  value={contextNote}
+                  onChange={(e) => setContextNote(e.target.value)}
+                  placeholder="Optional: briefly explain what has been most demanding lately..."
+                  disabled={!shareContext}
+                />
+
+                <div className="cta-row">
+                  <button type="button" className="primary-btn" onClick={onShareNote} disabled={!shareContext || !contextNote.trim()}>
+                    Share anonymous notes
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <aside className="side-panel">
+              <div className="box">
+                <h3>Private view</h3>
+                <p>Your personal trends stay private. The system compares your readings with your own baseline and keeps the explanation in plain language.</p>
+              </div>
+
+              <div className="box">
+                <h3>What this means</h3>
+                <div className="stat-row">
+                  <span>Sleep</span>
+                  <strong>Lower</strong>
+                </div>
+                <div className="stat-row">
+                  <span>Stress</span>
+                  <strong>Higher</strong>
+                </div>
+                <div className="stat-row">
+                  <span>Energy</span>
+                  <strong>Lower</strong>
+                </div>
+                <div className="stat-row">
+                  <span>Focus</span>
+                  <strong>Steady</strong>
+                </div>
+              </div>
+
+              <div className="muted-callout">
+                <span className="dot" />
+                A change in pattern may reflect your workload, recovery, or routines—not a diagnosis.
+              </div>
+            </aside>
+          </div>
+        );
+      }
+
+      function EmployerView({ anonymousNotes }) {
+        return (
+          <div className="screen">
+            <section className="main-panel">
+              <div className="eyebrow">Anonymous group pattern</div>
+              <h2>Workplace wellbeing themes</h2>
+              <p className="subhead">
+                This dashboard summarizes group-level feedback only. It never shows an individual’s wearable readings or personal identity.
+              </p>
+
+              <div className="summary-strip">
+                <div className="mini-stat">
+                  <label>Team pulse</label>
+                  <strong>72%</strong>
+                </div>
+                <div className="mini-stat">
+                  <label>Recovery support</label>
+                  <strong>+18%</strong>
+                </div>
+                <div className="mini-stat">
+                  <label>Meeting load</label>
+                  <strong>High</strong>
+                </div>
+              </div>
+
+              <div className="dashboard-grid">
+                {teamThemes.map((theme) => (
+                  <article className="theme-card" key={theme.title}>
+                    <h3>{theme.title}</h3>
+                    <ul className="bullet-list">
+                      <li>{theme.detail}</li>
+                      <li>{theme.example}</li>
+                    </ul>
+                  </article>
+                ))}
+              </div>
+
+              <div className="theme-card" style={{ marginTop: '18px' }}>
+                <h3>Recent anonymous notes</h3>
+                <ul className="shared-note-list">
+                  {anonymousNotes.map((note, index) => (
+                    <li key={`${note}-${index}`}>{note}</li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+
+            <aside className="side-panel">
+              <div className="box">
+                <h3>Summary</h3>
+                <p>Employees most often described a need for more recovery time and clearer handoff points between tasks.</p>
+              </div>
+
+              <div className="box">
+                <h3>What is excluded</h3>
+                <div className="stat-row">
+                  <span>Individual readings</span>
+                  <strong>Hidden</strong>
+                </div>
+                <div className="stat-row">
+                  <span>Identity</span>
+                  <strong>Hidden</strong>
+                </div>
+                <div className="stat-row">
+                  <span>Risk scoring</span>
+                  <strong>Not used</strong>
+                </div>
+              </div>
+            </aside>
+          </div>
+        );
+      }
+
+      function TeamChangeTrial({ trialStage, setTrialStage, trialResponses, setTrialResponses }) {
+        const current = React.useMemo(() => {
+          const stageData = trialResponses[trialStage];
+          const summary = {
+            energy: parseScore(stageData.energy, defaultTrialSummary[trialStage].energy),
+            focus: parseScore(stageData.focus, defaultTrialSummary[trialStage].focus),
+            calm: parseScore(stageData.calm, defaultTrialSummary[trialStage].calm),
+            quote: stageData.note && stageData.note.trim() ? stageData.note.trim() : defaultTrialSummary[trialStage].quote
+          };
+
+          return summary;
+        }, [trialResponses, trialStage]);
+
+        const updateStageInput = (field, value) => {
+          setTrialResponses((previous) => ({
+            ...previous,
+            [trialStage]: {
+              ...previous[trialStage],
+              [field]: value
+            }
+          }));
+        };
+
+        return (
+          <div className="screen">
+            <section className="main-panel">
+              <div className="eyebrow">Small workplace change</div>
+              <h2>Try a short reset after meetings</h2>
+              <p className="subhead">
+                The team tested a simple change: a 5-minute quiet reset after back-to-back meetings. Feedback was collected anonymously before and after the pilot.
+              </p>
+
+              <div className="trial-box">
+                <div className="trial-header">
+                  <h3>Feedback check-in</h3>
+                  <div className="segmented" role="tablist" aria-label="Trial stages">
+                    <button
+                      type="button"
+                      className={trialStage === 'before' ? 'active' : ''}
+                      onClick={() => setTrialStage('before')}
+                    >
+                      Before
+                    </button>
+                    <button
+                      type="button"
+                      className={trialStage === 'after' ? 'active' : ''}
+                      onClick={() => setTrialStage('after')}
+                    >
+                      After
+                    </button>
+                  </div>
+                </div>
+
+                <form
+                  className="trial-form"
+                  onSubmit={(event) => event.preventDefault()}
+                >
+                  <div className="field-group">
+                    <label htmlFor="energy-score">Energy</label>
+                    <div className="field-row">
+                      <input
+                        id="energy-score"
+                        className="range-input"
+                        type="range"
+                        min="0"
+                        max="10"
+                        step="0.1"
+                        value={trialResponses[trialStage].energy}
+                        onChange={(event) => updateStageInput('energy', Number(event.target.value))}
+                      />
+                      <span className="inline-value">{current.energy.toFixed(1)}</span>
+                    </div>
+                  </div>
+
+                  <div className="field-group">
+                    <label htmlFor="focus-score">Focus</label>
+                    <div className="field-row">
+                      <input
+                        id="focus-score"
+                        className="range-input"
+                        type="range"
+                        min="0"
+                        max="10"
+                        step="0.1"
+                        value={trialResponses[trialStage].focus}
+                        onChange={(event) => updateStageInput('focus', Number(event.target.value))}
+                      />
+                      <span className="inline-value">{current.focus.toFixed(1)}</span>
+                    </div>
+                  </div>
+
+                  <div className="field-group">
+                    <label htmlFor="calm-score">Calm</label>
+                    <div className="field-row">
+                      <input
+                        id="calm-score"
+                        className="range-input"
+                        type="range"
+                        min="0"
+                        max="10"
+                        step="0.1"
+                        value={trialResponses[trialStage].calm}
+                        onChange={(event) => updateStageInput('calm', Number(event.target.value))}
+                      />
+                      <span className="inline-value">{current.calm.toFixed(1)}</span>
+                    </div>
+                  </div>
+
+                  <div className="field-group">
+                    <label htmlFor="trial-note">Anonymous note</label>
+                    <textarea
+                      id="trial-note"
+                      className="response-note"
+                      value={trialResponses[trialStage].note}
+                      onChange={(event) => updateStageInput('note', event.target.value)}
+                      placeholder="What changed most during this stage?"
+                    />
+                  </div>
+
+                  <div className="survey-status">
+                    Calculated from the current responses for the {trialStage} stage.
+                  </div>
+                </form>
+
+                <div className="trial-feedback">
+                  <div className="feedback-card">
+                    <h4>Energy</h4>
+                    <div className="score">{current.energy.toFixed(1)}/10</div>
+                    <p className="simple-quote">{trialStage === 'before' ? 'People often felt drained before the reset.' : 'Energy was more sustainable after the reset.'}</p>
+                  </div>
+
+                  <div className="feedback-card">
+                    <h4>Focus</h4>
+                    <div className="score">{current.focus.toFixed(1)}/10</div>
+                    <p className="simple-quote">{trialStage === 'before' ? 'Attention dropped after several meetings.' : 'The transition into the next task felt steadier.'}</p>
+                  </div>
+                </div>
+
+                <div className="plain-language">
+                  <strong>Plain-language explanation:</strong> The group reported feeling less rushed after the reset. That does not prove the workplace change caused the change in feedback; it suggests the change may have been part of a bigger pattern.
+                </div>
+
+                <div className="cta-row">
+                  <button type="button" className="primary-btn" onClick={() => setTrialStage(trialStage === 'before' ? 'after' : 'before')}>
+                    Toggle sample feedback
+                  </button>
+                  <button type="button" className="secondary-btn">Share anonymous notes</button>
+                </div>
+              </div>
+            </section>
+
+            <aside className="side-panel">
+              <div className="box">
+                <h3>What people said</h3>
+                <p>{current.quote}</p>
+              </div>
+
+              <div className="box">
+                <h3>Important context</h3>
+                <p>Any change in feedback is a useful signal, not proof of cause. Multiple factors, such as workload, deadlines, and recovery habits, can influence the result.</p>
+              </div>
+
+              <div className="box">
+                <h3>Trial goal</h3>
+                <div className="stat-row">
+                  <span>Calm</span>
+                  <strong>{current.calm.toFixed(1)}/10</strong>
+                </div>
+                <div className="stat-row">
+                  <span>Break rhythm</span>
+                  <strong>Improved</strong>
+                </div>
+              </div>
+            </aside>
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+  </body>
+</html>
